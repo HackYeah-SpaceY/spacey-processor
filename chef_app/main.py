@@ -30,7 +30,7 @@ def create_app():
     @app.route("/new_chat/", methods=['POST', 'GET'])
     def new_chat():
         if 'url' not in request.args or 'id' not in request.args:
-            return "Missing url or id", 400
+            return jsonify({"status": "error", "error": "Missing url or id"}), 400
         
         url = request.args.get('url')
         id = request.args.get('id')
@@ -39,18 +39,18 @@ def create_app():
 
         state[id] = client
 
-        return f"Chat created with url: {url} and id: {id}", 200
+        return jsonify({"status": "ok", "response": f"Chat created with url: {url} and id: {id}"}), 200
 
     @app.route("/message/", methods=['POST', 'GET'])
     def send_message():
         if 'id' not in request.args or 'message' not in request.args:
-            return "Missing id or message", 400
+            return jsonify({"status": "error", "error": "Missing id or message"}), 400
 
         id = request.args.get('id')
         message = request.args.get('message')
 
         if id not in state:
-            return "Chat not found", 404
+            return jsonify({"status": "error", "error": "Chat not found"}), 404
         
         current_state = state[id]
 
@@ -90,7 +90,7 @@ def create_app():
         
         state[id] = current_state
         return jsonify(
-            {"response": chat_completion.choices[0].message.content, "screenshot": upload_result["secure_url"]}
+            {"status": "ok", "response": chat_completion.choices[0].message.content, "screenshot": upload_result["secure_url"]}
         ), 200
     
     return app
