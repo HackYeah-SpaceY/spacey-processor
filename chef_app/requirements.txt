@@ -4,3 +4,4 @@ beautifulsoup4==4.12.3
 flask[async]==3.0.3
 cloudinary==1.41.0
 gunicorn==23.0.0
+Flask-Cors==4.0.1
