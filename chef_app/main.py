@@ -27,7 +27,7 @@ def create_app():
     loop = asyncio.get_event_loop()
 
     # Url and id in query
-    @app.route("/new_chat/", methods=['POST'])
+    @app.route("/new_chat/", methods=['POST', 'GET'])
     def new_chat():
         if 'url' not in request.args or 'id' not in request.args:
             return "Missing url or id", 400
@@ -41,7 +41,7 @@ def create_app():
 
         return f"Chat created with url: {url} and id: {id}", 200
 
-    @app.route("/message/", methods=['POST'])
+    @app.route("/message/", methods=['POST', 'GET'])
     def send_message():
         if 'id' not in request.args or 'message' not in request.args:
             return "Missing id or message", 400
