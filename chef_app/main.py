@@ -27,13 +27,14 @@ def create_app():
     loop = asyncio.get_event_loop()
 
     # Url and id in query
-    @app.route("/new_chat/", methods=['POST', 'GET'])
+    @app.route("/new_chat", methods=['POST'])
     def new_chat():
-        if 'url' not in request.args or 'id' not in request.args:
+        data = request.json
+        url = data.get("url")
+        id = data.get("id")
+        if not url or id:
             return jsonify({"status": "error", "error": "Missing url or id"}), 400
         
-        url = request.args.get('url')
-        id = request.args.get('id')
 
         client = loop.run_until_complete(ChefClient(openai_client, url).__aenter__())
 
@@ -41,13 +42,13 @@ def create_app():
 
         return jsonify({"status": "ok", "response": f"Chat created with url: {url} and id: {id}"}), 200
 
-    @app.route("/message/", methods=['POST', 'GET'])
+    @app.route("/message", methods=['POST'])
     def send_message():
-        if 'id' not in request.args or 'message' not in request.args:
+        data = request.json
+        id = data.get("id")
+        message = data.get("message")
+        if not message or id:
             return jsonify({"status": "error", "error": "Missing id or message"}), 400
-
-        id = request.args.get('id')
-        message = request.args.get('message')
 
         if id not in state:
             return jsonify({"status": "error", "error": "Chat not found"}), 404
@@ -97,3 +98,6 @@ def create_app():
 
 app = create_app()
 CORS(app)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', debug=True, port=8000, threaded=True)
