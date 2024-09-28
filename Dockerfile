@@ -1,3 +1,8 @@
+WORKDIR /chef_app
+
+COPY /chef_app/requirements.txt .
+COPY /chef_app .
+
 FROM python:3.9-slim
 
 RUN pip install --no-cache-dir -r requirements.txt
