@@ -8,7 +8,7 @@ from flask import Flask, jsonify
 from flask import request
 from openai import OpenAI
 import json
-
+from flask_cors import CORS
 from chef_client import ChefClient
 import asyncio
 import cloudinary.uploader
