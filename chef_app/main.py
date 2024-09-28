@@ -32,7 +32,7 @@ def create_app():
         data = request.json
         url = data.get("url")
         id = data.get("id")
-        if not url or id:
+        if not url or not id:
             return jsonify({"status": "error", "error": "Missing url or id"}), 400
         
 
@@ -47,7 +47,7 @@ def create_app():
         data = request.json
         id = data.get("id")
         message = data.get("message")
-        if not message or id:
+        if not message or not id:
             return jsonify({"status": "error", "error": "Missing id or message"}), 400
 
         if id not in state:
