@@ -22,4 +22,4 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 EXPOSE 8000
 
 # CMD ["python", "main.py"]
-ENTRYPOINT ["gunicorn", "-w 1 -b 0.0.0.0:8000 main:app"]
+CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:8000", "main:app"]
