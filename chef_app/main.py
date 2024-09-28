@@ -1,6 +1,6 @@
 # A Flask app here
 
-# /new_chat(url, id)
+# /new_cshat(url, id)
 # /send_message(id, message) 
 import uuid
 from flask import Flask, jsonify
