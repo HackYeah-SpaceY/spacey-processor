@@ -74,9 +74,10 @@ def create_app():
             chat_completion = loop.run_until_complete(current_state.query())
 
             current_state.messages.append(chat_completion.choices[0].message)
-            print(chat_completion.choices[0].message.content)
-        else:
-            print(chat_completion.choices[0].message.content)
+            # print(chat_completion.choices[0].message.content)
+            print(f"Agent with chat id {id} is using tools")
+        # else:
+        #     print(chat_completion.choices[0].message.content)
 
         loop.run_until_complete(current_state.save_screenshot())
 
@@ -86,7 +87,8 @@ def create_app():
             public_id = f"{uuid.uuid4()}",
             overwrite = True, 
             resource_type = "image")
-        print(upload_result["secure_url"])
+        # print(upload_result["secure_url"])
+        print (f"Agent with chat id {id} is sending message {chat_completion.choices[0].message.content} and uploading screenshot to {upload_result['secure_url']}")
         
         state[id] = current_state
         return jsonify(

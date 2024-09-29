@@ -63,7 +63,7 @@ class ChefClient:
             )
         
         self.messages = [
-            {"role": "system", "content": "You\'re an assistant that has an ability to interact with websites"},
+            {"role": "system", "content": "You\'re an assistant that has an ability to interact with websites based on your functions. You can fetch the website and click buttons on it. If there are some obvious buttons that could be clicked (like \"start now\") - do it immediately and without asking the user."},
             {"role": "system", "content": f"Please fetch the website: {url}"}
         ]
 
@@ -105,12 +105,14 @@ class ChefClient:
     
     async def handle_function(self, function):
         if function.name == "fetch_website":
-            print(json.loads(function.arguments)['url'])
+            # print(json.loads(function.arguments)['url'])
+            print (f"Agent with chat id {self.url} is fetching website with url {json.loads(function.arguments)['url']}")
             res = await self.fetch_website()
-            print (res)
+            # print (res)
             return res
         elif function.name == "click_button":
-            print(json.loads(function.arguments)['idx'])
+            print(f"Agent with chat id {self.url} is clicking button with index {json.loads(function.arguments)['idx']} on page with url {self.url}")
+            # print(json.loads(function.arguments)['idx'])
             res = await self.click_button(json.loads(function.arguments)['idx'])
             return res
 
