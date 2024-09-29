@@ -30,32 +30,42 @@ class WebScraper:
         try:
             html_content = await self.playwright_manager.get_page_content()
             soup = BeautifulSoup(html_content, 'html.parser')
-            
+            main_list=[]
             input_elements = soup.find_all('input')
             input_strings = [str(input_element) for input_element in input_elements]
-            return input_strings
+            for index,input_string in enumerate(input_strings):
+                main_list.append({
+                    "index":index,
+                    "input_string":input_string
+                })
+
+            return main_list
         except Exception as e:
             return f"Error: {e}"
 
-    async def LocateInputWith5Divs(self) -> Optional[List[str]]:
+    async def LocateInputWith3Divs(self) -> Optional[List[str]]:
         try:
             html_content = await self.playwright_manager.get_page_content()
             soup = BeautifulSoup(html_content, 'html.parser')
 
             inputs = soup.find_all('input')
-            divs_above_list = []
+            main_list = []
 
-            for input_element in inputs:
+            for index,input_element in enumerate(inputs):
                 current_div = input_element
                 divs_above = []
-                for _ in range(5):
-                    current_div = current_div.find_parent('div')
+                for _ in range(3):
+                    current_div = current_div.find_parent()
                     if current_div is None:
                         break
-                    divs_above.append(current_div)
-                divs_above_list.append(divs_above)
+                    divs_above.append(current_div.text)
+                if current_div is not None:
+                    main_list.append({
+                        "index":index,
+                        "InputDivs":divs_above
+                    })
             
-            return divs_above_list
+            return main_list
         except Exception as e:
             return f"Error: {e}"
 
@@ -66,9 +76,9 @@ class WebScraper:
             soup = BeautifulSoup(html_content, 'html.parser')
 
             buttons = soup.find_all('button')
-            divs_above_list = []
+            main_list= []
 
-            for button_element in buttons:
+            for index,button_element in enumerate(buttons):
                 current_div = button_element
                 divs_above = []
                 for _ in range(1):
@@ -76,9 +86,12 @@ class WebScraper:
                     if current_div is None:
                         break
                     divs_above.append(current_div)
-                divs_above_list.append(divs_above)
+                main_list.append({
+                    "index":index,
+                    "ButtonDivs":divs_above
+                })
 
-            return divs_above_list
+            return main_list
         except Exception as e:
             return f"Error: {e}"
 
@@ -86,9 +99,35 @@ class WebScraper:
         try:
             html_content = await self.playwright_manager.get_page_content()
             soup = BeautifulSoup(html_content, 'html.parser')
-
+            main_list=[]
             buttons = soup.find_all('button')
             button_strings = [str(button) for button in buttons]
-            return button_strings
+            for index,button_string in enumerate(button_strings):
+                main_list.append({
+                    "index":index,
+                    "button":button_string
+                })
+            return main_list
+        except Exception as e:
+            return f"Error: {e}"
+
+    async def LocateHrefs(self) -> Optional[List[dict]]:
+        try:
+            html_content = await self.playwright_manager.get_page_content()
+            soup = BeautifulSoup(html_content, 'html.parser')
+
+            a_elements = soup.find_all('a', href=True)  
+            divs_above_list = []
+
+            for index,a_element in enumerate(a_elements):
+                href = a_element["href"]
+                if "https" in href:  
+                    divs_above_list.append({
+                        "index": index,  
+                        "href": href,
+                        #
+                    })
+
+            return divs_above_list  #
         except Exception as e:
             return f"Error: {e}"

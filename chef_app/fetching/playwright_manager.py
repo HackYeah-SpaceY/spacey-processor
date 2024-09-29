@@ -9,9 +9,9 @@ class PlaywrightManager:
 
     async def __aenter__(self):
         self.playwright = await async_playwright().start()
-        self.browser = await self.playwright.chromium.launch(headless=True)
+        self.browser = await self.playwright.chromium.launch(headless=False)
         self.page = await self.browser.new_page()
-        await self.page.goto(self.url, timeout=10000)
+        await self.page.goto(self.url, timeout=100000)
         await asyncio.sleep(3)
         return self
     
