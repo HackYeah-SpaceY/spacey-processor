@@ -16,7 +16,7 @@ class ChefClient:
         function_defs = [
             {
                 "function": self.fetch_website,
-                "description": "Fetches the website with the provided url. Provides the plain text and also available buttons and fillable inputs.",
+                "description": "Fetches the website with the provided url. Provides the clickable buttons, fillable inputs, links and plain text.",
                 "parameters": {
                     "type": "object",
                     "properties": {
@@ -32,7 +32,7 @@ class ChefClient:
             },
             {
                 "function": self.click_button,
-                "description": "Clicks the button with the provided index. Returns the new page plain text and available buttons and fillable inputs.",
+                "description": "Clicks the button with the provided index. Returns the clickable buttons, fillable inputs, links and plain text on the new page.",
                 "parameters": {
                     "type": "object",
                     "properties": {
@@ -42,6 +42,22 @@ class ChefClient:
                         }
                     },
                     "required": ["idx"],
+                    "additionalProperties": False,
+                },
+                "return_type": "string",
+            },
+            {
+                "function": self.go_to_link,
+                "description": "Navigates to the link. The assistant should only navigate to the links on the page. Returns the clickable buttons, fillable inputs, links and plain text on the new page.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "url": {
+                            "type": "string",
+                            "description": "link url",
+                        }
+                    },
+                    "required": ["url"],
                     "additionalProperties": False,
                 },
                 "return_type": "string",
@@ -76,17 +92,18 @@ class ChefClient:
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.manager.__aexit__(exc_type, exc_val, exc_tb)
 
-    async def fetch_website(self) -> tuple[str, List[str], List[str]]:
+    async def fetch_website(self) -> tuple[str, str, str, str]:
         try:
             buttons = await self.scraper.LocateButton()
             inputs = await self.scraper.LocateInput()
+            links = await self.scraper.LocateHrefs()
             plain_text = await self.scraper.GetPlainTextFromHTML()
 
-            return buttons, inputs, plain_text
+            return buttons, inputs, links, plain_text
         except Exception as e:
             return f"Error: {e}"
         
-    async def click_button(self, idx: int) -> tuple[str, List[str], List[str]]:
+    async def click_button(self, idx: int) -> tuple[str, str, str, str]:
         try:
             buttons = await self.scraper.LocateButton()
 
@@ -97,9 +114,23 @@ class ChefClient:
 
             buttons = await self.scraper.LocateButton()
             inputs = await self.scraper.LocateInput()
+            links = await self.scraper.LocateHrefs()
             plain_text = await self.scraper.GetPlainTextFromHTML()
 
-            return buttons, inputs, plain_text
+            return buttons, inputs, links, plain_text
+        except Exception as e:
+            return f"Error: {e}"
+    
+    async def go_to_link(self, url: str) -> tuple[str, str, str, str]:
+        try:
+            await self.interaction_handler.open_href(url)
+
+            buttons = await self.scraper.LocateButton()
+            inputs = await self.scraper.LocateInput()
+            links = await self.scraper.LocateHrefs()
+            plain_text = await self.scraper.GetPlainTextFromHTML()
+
+            return buttons, inputs, links, plain_text
         except Exception as e:
             return f"Error: {e}"
     
@@ -113,6 +144,11 @@ class ChefClient:
             print(f"Agent with chat id {self.url} is clicking button with index {json.loads(function.arguments)['idx']} on page with url {self.url}")
             # print(json.loads(function.arguments)['idx'])
             res = await self.click_button(json.loads(function.arguments)['idx'])
+            return res
+        elif function.name == "go_to_link":
+            print(f"Agent with chat id {self.url} is going to link with url {json.loads(function.arguments)['url']} on page with url {self.url}")
+            # print(json.loads(function.arguments)['idx'])
+            res = await self.go_to_link(json.loads(function.arguments)['url'])
             return res
 
         return None
