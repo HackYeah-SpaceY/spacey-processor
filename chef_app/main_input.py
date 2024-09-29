@@ -43,7 +43,6 @@ async def main():
                 chat_completion = await client.query()
                 tool_calls = chat_completion.choices[0].message.tool_calls
 
-                print("WOO!")
                 # print(client.messages)
 
                 client.messages.append(chat_completion.choices[0].message)
