@@ -81,6 +81,12 @@ class ChefClient:
                     "additionalProperties": False,
                 },
                 "return_type": "string",
+            },
+            {
+                "function": self.scroll_down,
+                "description": "Scrolls down the page. Returns the clickable buttons, fillable inputs, links and plain text.",
+                "parameters": {},
+                "return_type": "string",
             }
         ]
 
@@ -172,6 +178,25 @@ class ChefClient:
             return buttons, inputs, links, plain_text
         except Exception as e:
             return f"Error: {e}"
+        
+    async def scroll_down(self) -> tuple[str, str, str, str]:
+        try:
+            await self.interaction_handler.scroll_down()
+
+            buttons = await self.scraper.LocateButton()
+            inputs = await self.scraper.LocateInput()
+            links = await self.scraper.LocateHrefs()
+            plain_text = await self.scraper.GetPlainTextFromHTML()
+
+            return buttons, inputs, links, plain_text
+        except Exception as e:
+            buttons = await self.scraper.LocateButton()
+            inputs = await self.scraper.LocateInput()
+            links = await self.scraper.LocateHrefs()
+            plain_text = await self.scraper.GetPlainTextFromHTML()
+
+            print(f"Error: {e}")
+            return buttons, inputs, links, plain_text
     
     async def handle_function(self, function):
         if function.name == "fetch_website":
@@ -193,6 +218,10 @@ class ChefClient:
             print(f"Agent with chat id {self.url} is filling input with index {json.loads(function.arguments)['input_idx']} with value {json.loads(function.arguments)['value']} on page with url {self.url}")
             # print(json.loads(function.arguments)['idx'])
             res = await self.fill_input(json.loads(function.arguments)['input_idx'], json.loads(function.arguments)['value'])
+            return res
+        elif function.name == "scroll_down":
+            print(f"Agent with chat id {self.url} is scrolling down on page with url {self.url}")
+            res = await self.scroll_down()
             return res
 
         return None

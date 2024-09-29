@@ -71,3 +71,12 @@ class InteractionHandler:
             await page.goto(element)
         except Exception as e:
             return("Error ", e)
+        
+    async def scroll_down(self) -> None:
+        try:
+            page = await self.playwright_manager.get_page()
+            print(page.viewport_size)
+            # await page.mouse.wheel(0, 700)
+            await page.evaluate(f"window.scrollBy(0, {page.viewport_size['height']/2})")
+        except Exception as e:
+            return("Error ", e)
