@@ -27,7 +27,9 @@ async def main():
             client.messages.append(chat_completion.choices[0].message)
 
             tool_calls = chat_completion.choices[0].message.tool_calls
-            if (tool_calls is not None):
+            # print(chat_completion)
+            # print(tool_calls)
+            while (tool_calls is not None):
                 for i in range(len(tool_calls)):
                     function = tool_calls[i].function
 
@@ -36,8 +38,13 @@ async def main():
                         "content": json.dumps(await client.handle_function(function)),
                         "tool_call_id": tool_calls[i].id
                     })
+                    # print(client.messages)
 
                 chat_completion = await client.query()
+                tool_calls = chat_completion.choices[0].message.tool_calls
+
+                print("WOO!")
+                # print(client.messages)
 
                 client.messages.append(chat_completion.choices[0].message)
                 print(chat_completion.choices[0].message.content)

@@ -93,7 +93,7 @@ class ChefClient:
             if idx >= len(buttons):
                 return "Error: Invalid index"
 
-            await self.interaction_handler.click_button(buttons[idx])
+            await self.interaction_handler.click_button(buttons[idx]['button'])
 
             buttons = await self.scraper.LocateButton()
             inputs = await self.scraper.LocateInput()

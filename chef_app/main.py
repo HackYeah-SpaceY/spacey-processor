@@ -61,7 +61,7 @@ def create_app():
         current_state.messages.append(chat_completion.choices[0].message)
 
         tool_calls = chat_completion.choices[0].message.tool_calls
-        if (tool_calls is not None):
+        while (tool_calls is not None):
             for i in range(len(tool_calls)):
                 function = tool_calls[i].function
 
@@ -73,7 +73,9 @@ def create_app():
 
             chat_completion = loop.run_until_complete(current_state.query())
 
-            current_state.messages.append(chat_completion.choices[0].message)
+            tool_calls = chat_completion.choices[0].message.tool_calls
+            if tool_calls is not None:
+                current_state.messages.append(chat_completion.choices[0].message)
             # print(chat_completion.choices[0].message.content)
             print(f"Agent with chat id {id} is using tools")
         # else:
