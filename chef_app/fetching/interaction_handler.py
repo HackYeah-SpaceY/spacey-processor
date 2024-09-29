@@ -48,6 +48,7 @@ class InteractionHandler:
             for button in buttons:
                 try: 
                     if await button.is_visible():
+                        await button.scroll_into_view_if_needed()
                         await button.click(force=True)
                         await asyncio.sleep(3)
                         return 
@@ -60,6 +61,7 @@ class InteractionHandler:
         try:
             selector=generate_css_selector(str(element))
             page = await self.playwright_manager.get_page()
+            await page.locator(selector).scroll_into_view_if_needed()
             await page.locator(selector).fill(value=value)
         except Exception as e:
             return("Error ",e)

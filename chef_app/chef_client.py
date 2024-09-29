@@ -61,6 +61,26 @@ class ChefClient:
                     "additionalProperties": False,
                 },
                 "return_type": "string",
+            },
+            {
+                "function": self.fill_input,
+                "description": "Fills the input with the provided value. Returns the clickable buttons, fillable inputs, links and plain text.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "input_idx": {
+                            "type": "integer",
+                            "description": "index of the input",
+                        },
+                        "value": {
+                            "type": "string",
+                            "description": "value to fill in the input",
+                        }
+                    },
+                    "required": ["input_idx", "value"],
+                    "additionalProperties": False,
+                },
+                "return_type": "string",
             }
         ]
 
@@ -133,6 +153,25 @@ class ChefClient:
             return buttons, inputs, links, plain_text
         except Exception as e:
             return f"Error: {e}"
+        
+    async def fill_input(self, input_idx: int, value: str) -> tuple[str, str, str, str]:
+        try:
+            inputs = await self.scraper.LocateInput()
+            print(inputs)
+
+            if input_idx >= len(inputs):
+                return "Error: Invalid index"
+
+            await self.interaction_handler.fill_input(inputs[input_idx]['input_string'], value)
+
+            buttons = await self.scraper.LocateButton()
+            inputs = await self.scraper.LocateInput()
+            links = await self.scraper.LocateHrefs()
+            plain_text = await self.scraper.GetPlainTextFromHTML()
+
+            return buttons, inputs, links, plain_text
+        except Exception as e:
+            return f"Error: {e}"
     
     async def handle_function(self, function):
         if function.name == "fetch_website":
@@ -149,6 +188,11 @@ class ChefClient:
             print(f"Agent with chat id {self.url} is going to link with url {json.loads(function.arguments)['url']} on page with url {self.url}")
             # print(json.loads(function.arguments)['idx'])
             res = await self.go_to_link(json.loads(function.arguments)['url'])
+            return res
+        elif function.name == "fill_input":
+            print(f"Agent with chat id {self.url} is filling input with index {json.loads(function.arguments)['input_idx']} with value {json.loads(function.arguments)['value']} on page with url {self.url}")
+            # print(json.loads(function.arguments)['idx'])
+            res = await self.fill_input(json.loads(function.arguments)['input_idx'], json.loads(function.arguments)['value'])
             return res
 
         return None
