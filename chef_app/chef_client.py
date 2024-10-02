@@ -105,7 +105,10 @@ class ChefClient:
             )
         
         self.messages = [
-            {"role": "system", "content": "You\'re an assistant that has an ability to interact with websites based on your functions. You can fetch the website and click buttons on it. Please be concise and don\'t provide too much information at once."},
+            {"role": "system", "content": '''You\'re an assistant that has an ability to interact with websites based on your functions. 
+You can fetch the provided website and click links and buttons on it. You can also fill out forms and submit them.
+Please be concise and don\'t provide too much information at once.
+If a user asks you about a particular information and it's not available on the page, go to a suitable subpage that could contain the information.'''},
             {"role": "system", "content": f"Please fetch the website: {url}"}
         ]
 
